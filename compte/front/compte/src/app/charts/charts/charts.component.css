@@ -1,0 +1,22 @@
+/* charts.component.css */
+
+/* Style pour le conteneur du graphique */
+.chart-container {
+    display: flex;                 /* Utilise Flexbox pour le centrage */
+    justify-content: center;       /* Centre le contenu horizontalement */
+    align-items: center;           /* Centre le contenu verticalement */
+    height: 100vh;                /* Prend toute la hauteur de la fenêtre */
+    padding: 20px;                /* Ajoute un peu de marge */
+    box-sizing: border-box;       /* Inclut le padding dans la largeur totale */
+  }
+  
+  /* Style pour le canvas */
+  #myChart {
+    width: 100%;                  /* Prend 100% de la largeur de son conteneur */
+    max-width: 600px;            /* Définissez une largeur maximale pour le graphique */
+    max-height: 400px;           /* Définissez une hauteur maximale si nécessaire */
+    height: auto;                 /* Assurez-vous que la hauteur est ajustée */
+    border: 1px solid #ccc;      /* Optionnel : une bordure gris clair pour le conteneur */
+    border-radius: 10px;         /* Optionnel : coins arrondis */
+  }
+  
