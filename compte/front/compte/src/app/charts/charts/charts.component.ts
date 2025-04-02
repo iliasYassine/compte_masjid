@@ -14,59 +14,77 @@ export class ChartsComponent implements OnInit{
 
 
 constructor(private chartsService:ChartsService){ Chart.register(...registerables);}
-compte:ChartsModel[]=[];
-chart: Chart | null = null;
+compte: ChartsModel[] = [];
+  chart: Chart | null = null;
+  totalDons: number = 0;
+  objectif: number = 10000; // Exemple d'objectif
 
-ngOnInit(): void {
-    this.getInfoDons()
-    this.getCharts()
-}
+  ngOnInit(): void {
+    this.getInfoDons();
+  }
 
-getInfoDons(){
-  this.chartsService.getCompte().subscribe(data=>{
-    this.compte=data;
-    console.log(this.compte);
-  })
-}
+  getInfoDons() {
+    this.chartsService.getCompte().subscribe(data => {
+      this.compte = data;
+      this.calculateTotalDons();
+      this.getCharts();
+    });
+  }
 
+  calculateTotalDons() {
+    this.totalDons = this.compte.reduce((sum, c) => sum + (c.dons || 0), 0);
+  }
 
-getCharts(){
+  getCharts() {
+    const achieved = this.totalDons; // Montant atteint
+    const remaining = this.objectif - achieved > 0 ? this.objectif - achieved : 0; // Montant restant
 
-  const labels = this.compte.map(c => `Compte ${c.id}`); // Remplacez `id` par la propriété que vous souhaitez utiliser comme étiquette
-    const dataValues = this.compte.map(c => c.dons); // Supposons que 'dons' est une propriété de votre modèle
+    // Utiliser les valeurs pour le graphique
+    const ctx = document.getElementById('myChart') as HTMLCanvasElement;
 
-    const ctx = document.getElementById('myChart') as HTMLCanvasElement; // Assurez-vous que l'ID correspond à votre canvas
-    console.log("testos: ",dataValues);
     if (this.chart) {
-      this.chart.destroy(); // Détruisez l'ancien graphique s'il existe
+      this.chart.destroy();
     }
 
     this.chart = new Chart(ctx, {
-      type: 'doughnut', // Type de graphique
+      type: 'doughnut',
       data: {
-        labels: labels,
+        labels: ['Montant Atteint', 'Montant Restant'],
         datasets: [{
-          label: 'Dons à ce jours',
-          data: dataValues,
-          backgroundColor: 'rgba(247, 19, 163, 0.95)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
+          label: 'Dons',
+          data: [achieved, remaining],
+          backgroundColor: [
+            'rgba(247, 19, 163, 0.95)', // Couleur pour le montant atteint
+            'rgba(54, 162, 235, 0.6)', // Couleur pour le montant restant
+          ],
+          borderWidth: 1,
         }]
       },
       options: {
         responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: (tooltipItem) => {
+                const label = tooltipItem.label || '';
+                const value = tooltipItem.raw || 0;
+                return `${label}: ${value} €`;
+              }
+            }
+          },
+          legend: {
+            display: true,
+            position: 'top',
+          },
+        },
+        elements: {
+          arc: {
+            borderWidth: 0 // Enlever le contour
           }
         }
       }
     });
   }
-
-  
-
-
 }
 
 
